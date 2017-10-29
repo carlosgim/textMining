@@ -1,0 +1,50 @@
+---
+title: "DSC - Data Adquisition and cleaning"
+output: html_notebook
+author: Carlos A. Gimenez
+abstract: This is a brief summary of my initial work on the capstone project for the Coursera/Johns Hopkins University Data Science specialization. The goals of this project are to create a predictive model of the word most likely to follow an English prefix of length n, and to use this model in an interactive application that predicts the next word a user will type SwiftKey and similar predictive-typing applications.
+---
+
+
+
+### Questions to consider
+
+
+1. What do the data look like?
+2. Where do the data come from?
+3. Can you think of any other data sources that might help you in this project?
+4. What are the common steps in natural language processing?
+5. What are some common issues in the analysis of text data?
+6. What is the relationship between NLP and the concepts you have learned in the Specialization?
+
+
+### 1. What do the data look like?
+
+Whe have four differnt folders, each of them have three different files. The folders are:
+
+* de_DE
+* en_US
+* fi_FI
+* ru_RU
+
+
+
+```{r}
+require(tm)
+```
+
+
+```{r}
+a  <- Corpus(DirSource("./Coursera-SwiftKey/final/en_US"), readerControl = list( reader=readPlain, language = "en"))
+```
+```{r}
+summary(a)
+```
+```{r}
+a[[2]]$meta
+```
+```{r}
+length(a[[2]]$content)
+```
+
+
