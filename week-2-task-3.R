@@ -7,16 +7,16 @@
 
 # Questions to consider
 
-# 1 - Some words are more frequent than others - what are the distributions of word frequencies?
-  
+# 1 - Some words are more frequent than others - what are the distributions 
+# of word frequencies?
 # 2- What are the frequencies of 2-grams and 3-grams in the dataset?
-  
-# 3- How many unique words do you need in a frequency sorted dictionary to cover 50% of all word instances in the language? 90%?
-  
+# 3- How many unique words do you need in a frequency sorted dictionary to cover 50% of all 
+# word instances in the language? 90%?
 # 4- How do you evaluate how many of the words come from foreign languages?
-  
-#  5- Can you think of a way to increase the coverage -- identifying words that may not be in the corpora or using a smaller number of words in the dictionary to cover the same number of phrases?
-  
+# 5- Can you think of a way to increase the coverage -- identifying words that 
+# may not be in the corpora or using a smaller number of words in the dictionary to cover the 
+# same number of phrases?
+
 #### Carga de Datos ####
 
 library(tm)  
@@ -40,7 +40,7 @@ news <- readLines("./Coursera-Swiftkey/final/en_US/en_US.news.txt")
 
 # Tomo una muestra de cada archivo
 nLines <- 5000;
-
+set.seed(1984)
 dat <- vector('character')
 tmp <- sample(twitter, nLines, replace = FALSE)
 dat <- c(dat, tmp)
@@ -87,7 +87,6 @@ corpus <- tm_map(corpus, content_transformer(removeWords), stopwords('english'))
 (tt <- findFreqTerms(tdm, lowfreq = 150))
 
 # Vemos los terminos por orden de frecuencias
-
 termFrequency <- rowSums(as.matrix(tdm[tt,]))
 
 # Grafico por orden de frecuencias
@@ -106,8 +105,6 @@ d = data.frame(word=names(v), freq = v)
 
 wordcloud(d$word, d$freq, min.freq = 300, random.color = TRUE, 
           colors = rainbow(7))
-
-
 
 
 

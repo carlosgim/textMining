@@ -108,9 +108,36 @@ wordcloud(d$word, d$freq, min.freq = 300, random.color = TRUE,
           colors = rainbow(7))
 
 
+library(textcat)
+indtext <- data.frame(rawtext = sapply(corpus, as.character), stringsAsFactors = FALSE)
+indtext$languaje <- textcat(indtext$rawtext)
+sample(indtext$rawtext, 10, replace = FALSE)
 
+#### Creating n-grams ####
+library(RWeka)
 
+ngram.1 <- data.frame(table(NGramTokenizer(indtext, Weka_control(min = 1, max = 1))))
+ngram.2 <- data.frame(table(NGramTokenizer(indtext, Weka_control(min = 2, max = 2))))
+ngram.3 <- data.frame(table(NGramTokenizer(indtext, Weka_control(min = 3, max = 3))))
+names(ngram.1)[names(ngram.1) == 'var1'] <- 'Text'
+names(ngram.2)[names(ngram.2) == 'var1'] <- 'Text'
+names(ngram.3)[names(ngram.3) == 'var1'] <- 'Text'
 
+ngram.1 <- ngram.1[order(ngram.1$Freq, decreasing = TRUE),]
+ngram.2 <- ngram.2[order(ngram.2$Freq, decreasing = TRUE),]
+ngram.3 <- ngram.3[order(ngram.3$Freq, decreasing = TRUE),]
+
+saveRDS(ngram.1, file='ngram_1.rds')
+saveRDS(ngram.2, file='ngram_2.rds')
+saveRDS(ngram.3, file='ngram_3.rds')
+
+str(ngram.1)
+ggplot(ngram.2[1:15,], aes(x=reorder(Var1,Freq), y=Freq)) +
+  geom_bar(stat='identity', position = 'dodge', fill= 'darkred') +
+  coord_flip() +
+  xlab('1-gram words') +
+  ylab('Sample Frequency') +
+  ggtitle('Most Common 1-grams')
 
 
 
