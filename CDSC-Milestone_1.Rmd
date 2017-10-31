@@ -1,0 +1,131 @@
+---
+title: "Coursera Data Science Captstone - Milestone Proyect"
+output: html_notebook
+autor: 'Carlos A. Gimenez'
+date: '10/29/2017'
+---
+
+```{r, eval=FALSE, echo=FALSE}
+library(tm)
+setwd(dirname(rstudioapi::getActiveDocumentContext()$path))
+```
+
+# Abstract
+
+We analyze three corpora of US English text: Blogs, News & Twitter. The main objective of the study is to analize the text as a starting point for a future text predicting application.
+
+
+
+# Getting Data and Exploring Basic Word Counts and Line Counts
+```{r, eval=FALSE}
+twitter <- readLines("./Coursera-Swiftkey/final/en_US/en_US.twitter.txt")
+blogs <- readLines("./Coursera-Swiftkey/final/en_US/en_US.blogs.txt")
+news <- readLines("./Coursera-Swiftkey/final/en_US/en_US.news.txt")
+```
+
+Get a sample of the files.
+```{r}
+data.sample <- (sample(twitter, length(twitter) * 0.05))
+```
+
+## Creating a subset corpus
+```{r}
+corpus <- VCorpus(VectorSource(data.sample))
+# Elimino numeros
+corpus <- tm_map(corpus, removeNumbers)
+# Elimino puntuacion
+corpus <- tm_map(corpus, removePunctuation, preserve_intra_word_dashes = TRUE)
+# Elimino espacio es blanco
+corpus <- tm_map(corpus, stripWhitespace)
+# Convierto a lowercase
+corpus <- tm_map(corpus, content_transformer(tolower))
+# Elimino las stop words
+corpus <- tm_map(corpus, content_transformer(removeWords), stopwords('english'))
+```
+
+# Exploratory Data Analysis
+
+```{r}
+NGramTokenizer1 <- function(x) unlist(lapply(NLP::ngrams(words(x), 1), paste, collapse =" "),
+                                      use.names = FALSE)
+NGramTokenizer2 <- function(x) unlist(lapply(NLP::ngrams(words(x), 2), paste, collapse =" "),
+                                      use.names = FALSE)
+
+NGramTokenizer3 <- function(x) unlist(lapply(NLP::ngrams(words(x), 3), paste, collapse =" "),
+                                      use.names = FALSE)
+
+ngram.1 <- TermDocumentMatrix(corpus, control=list(tokenize=NGramTokenizer1))
+ngram.2 <- TermDocumentMatrix(corpus, control=list(tokenize=NGramTokenizer2))
+ngram.3 <- TermDocumentMatrix(corpus, control=list(tokenize=NGramTokenizer3))
+```
+
+```{r}
+saveRDS(ngram.1, 'ngram1.rds')
+saveRDS(ngram.2, 'ngram2.rds')
+saveRDS(ngram.3, 'ngram3.rds')
+```
+
+```{r}
+ngram.1 <- readRDS('ngram1.rds')
+ngram.2 <- readRDS('ngram2.rds')
+ngram.3 <- readRDS('ngram3.rds')
+```
+
+
+## Unigram Analysis
+As we can see in the follow wordcloud, the most common words are "just", "get", "love", "will" and others.
+```{r, warning=FALSE}
+library(wordcloud)
+
+w <- findFreqTerms(ngram.1, lowfreq = 200)
+wf <- rowSums(as.matrix(ngram.1[w,]))
+wf <- data.frame(unigram=names(wf), frequency=wf)
+df <- data.frame(wf[,c('unigram','frequency')], row.names = NULL)
+wordcloud(df$unigram, df$frequency, min.freq=200, colors=brewer.pal(6, "Dark2")) 
+```
+
+
+## Two-gram Analysis
+The most frequent two-gram are "cant wait", "dont know" and "can get".
+```{r}
+require(ggplot2)
+w <- findFreqTerms(ngram.2, lowfreq = 100)
+wf <- rowSums(as.matrix(ngram.2[w,]))
+df <- data.frame(word=names(wf), frequency=wf, row.names = NULL)
+
+ggplot(df[1:15,], aes(x=reorder(word, frequency), y=frequency)) +
+geom_bar(stat = "identity", position = "dodge", fill = "darkred") + 
+coord_flip() +
+xlab("Bi-gram words") + ylab("Sample Frequency") +
+ggtitle('Most Common Bi-grams')
+```
+
+## Three-gram Analysis
+
+```{r}
+require(ggplot2)
+w <- findFreqTerms(ngram.3, lowfreq = 30)
+wf <- rowSums(as.matrix(ngram.3[w,]))
+df <- data.frame(word=names(wf), frequency=wf, row.names = NULL)
+
+ggplot(df[1:15,], aes(x=reorder(word, frequency), y=frequency)) +
+geom_bar(stat = "identity", position = "dodge", fill = "darkred") + 
+coord_flip() +
+xlab("Tri-gram words") + ylab("Sample Frequency") +
+ggtitle('Most Common Tri-grams')
+```
+
+
+
+# Other Questions:
+
+Q: How do you evaluate how many of the words come from foreign languages?
+
+A: We can use dictionaries. 
+
+Q: Can you think of a way to increase the coverage – identifying words that may not be in the corpora or using a smaller number of words in the dictionary to cover the same number of phrases?
+
+A: We should use synonyms to reduce the overall number of words
+
+
+
