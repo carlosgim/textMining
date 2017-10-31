@@ -1,13 +1,14 @@
 ---
 title: "Coursera Data Science Captstone - Milestone Proyect"
-output: html_notebook
-autor: 'Carlos A. Gimenez'
-date: '10/29/2017'
+date: "10/29/2017"
+output:
+  html_document:
+    df_print: paged
+autor: Carlos A. Gimenez
 ---
 
-```{r, eval=FALSE, echo=FALSE}
+```{r}
 library(tm)
-setwd(dirname(rstudioapi::getActiveDocumentContext()$path))
 ```
 
 # Abstract
@@ -17,16 +18,13 @@ We analyze three corpora of US English text: Blogs, News & Twitter. The main obj
 
 
 # Getting Data and Exploring Basic Word Counts and Line Counts
-```{r, eval=FALSE}
+```{r}
 twitter <- readLines("./Coursera-Swiftkey/final/en_US/en_US.twitter.txt")
 blogs <- readLines("./Coursera-Swiftkey/final/en_US/en_US.blogs.txt")
 news <- readLines("./Coursera-Swiftkey/final/en_US/en_US.news.txt")
+data.sample <- sample(twitter, length(twitter) * 0.05)
 ```
 
-Get a sample of the files.
-```{r}
-data.sample <- (sample(twitter, length(twitter) * 0.05))
-```
 
 ## Creating a subset corpus
 ```{r}
